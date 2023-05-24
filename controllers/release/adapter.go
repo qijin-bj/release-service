@@ -18,7 +18,11 @@ package release
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
+	"io"
+	"net/http"
+	"os"
 	"strings"
 
 	"github.com/go-logr/logr"
@@ -529,5 +533,30 @@ func (a *Adapter) validateAuthor() error {
 		return err
 	}
 
-	return a.registerAttributionData(releasePlan)
+	err = a.registerAttributionData(releasePlan)
+	if err != nil {
+		return err
+	}
+
+	a.logger.Info("making api call", "server", os.Getenv("SSO_SERVER"))
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
+	resp, err := client.Get("https://raw.githubusercontent.com/sd2995/GoLang/main/HelloWorldGo/main.go")
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	a.logger.Info("response received", "code", resp.StatusCode)
+
+	buf := new(strings.Builder)
+	io.Copy(buf, resp.Body)
+
+	a.logger.Info("response", "body", buf.String())
+	if err != nil && !errors.IsNotFound(err) {
+		//return reconciler.RequeueWithError(err)
+	}
+
+	return nil
 }

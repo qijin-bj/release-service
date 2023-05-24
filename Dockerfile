@@ -27,6 +27,9 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o manager main.go
 ARG ENABLE_WEBHOOKS=true
 ENV ENABLE_WEBHOOKS=${ENABLE_WEBHOOKS}
 
+ARG SSO_SERVER=test
+ENV SSO_SERVER=${SSO_SERVER}
+
 # Use ubi-micro as minimal base image to package the manager binary
 # See https://catalog.redhat.com/software/containers/ubi9/ubi-micro/615bdf943f6014fa45ae1b58
 FROM registry.access.redhat.com/ubi9/ubi-micro:9.1.0

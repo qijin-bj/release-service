@@ -70,5 +70,11 @@ spec:
               key: DEFAULT_RELEASE_WORKSPACE_NAME
               name: manager-properties
               optional: true
+        - name: SSO_SERVER
+          valueFrom:
+            configMapKeyRef:
+              key: SSO_SERVER
+              name: manager-properties
+              optional: true
       serviceAccountName: controller-manager
       terminationGracePeriodSeconds: 10
